@@ -1,15 +1,13 @@
 '''
-A blockchain with simple proof of work mining system
-Functionality to send signed transactions using simple wallet
+A very basic blockchain with simple proof of work mining system
+
 '''
 
 
 from datetime import datetime
-from typing import Sequence
 from StringUtil import StringUtil
 import json
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.asymmetric import ec
+
 
 class Block:
     '''
@@ -47,42 +45,6 @@ class Block:
             self.hash = self.calculateHash()
         print("Block Mined!!! : " + self.hash)
 
-class Wallet:
-    '''
-    Simple wallet to store address 
-    '''
-    def __init__(self):
-        self.generateKeyPair()
-    
-    def generateKeyPair(self):
-        try:
-            self.privateKey = ec.generate_private_key()
-            self.publicKey = self.privateKey.publicKey()
-        except Exception as e:
-            raise RuntimeError(e)
-
-class Transaction:
-    '''
-    make transactions
-    each transaction holds:
-    1) public keys of sender and receiver
-    2) amount to be transferred
-    3) inputs (reference to previous transactions to verify if sender has sufficient funds)
-    4) outputs (shows the amount after transactions, to be used as inputs in futher transactions)
-    '''
-    _sequence = 0          #rough count of generated transactions
-    def __init__(self, from_addr, to_addr, value, inputs)  :
-        self.sender = from_addr
-        self.recepient = to_addr
-        self.value = value
-        self.inputs = inputs
-    def calculateHash(self):
-        Transaction._sequence = Transaction._sequence+1
-        return StringUtil.applySha256(
-                                StringUtil.getStringFromKey(self.sender) +
-                                StringUtil.getStringFromKey(self.recepient) +
-                                str(self.value) + Transaction._equence
-                                )
 
 def json_serial(obj):
     '''
