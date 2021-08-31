@@ -56,8 +56,8 @@ class Wallet:
     
     def generateKeyPair(self):
         try:
-            self.privateKey = ec.generate_private_key()
-            self.publicKey = self.privateKey.publicKey()
+            self.privateKey = ec.generate_private_key(curve= ec.SECP256K1)
+            self.publicKey = self.privateKey.public_key()
         except Exception as e:
             raise RuntimeError(e)
 
@@ -71,11 +71,13 @@ class Transaction:
     4) outputs (shows the amount after transactions, to be used as inputs in futher transactions)
     '''
     _sequence = 0          #rough count of generated transactions
+
     def __init__(self, from_addr, to_addr, value, inputs)  :
         self.sender = from_addr
         self.recepient = to_addr
         self.value = value
         self.inputs = inputs
+
     def calculateHash(self):
         Transaction._sequence = Transaction._sequence+1
         return StringUtil.applySha256(
@@ -83,6 +85,16 @@ class Transaction:
                                 StringUtil.getStringFromKey(self.recepient) +
                                 str(self.value) + Transaction._equence
                                 )
+
+    def generateSignature(self, privateKey):
+        data = StringUtil.getStringFromKey(self.sender) + StringUtil.getStringFromKey(self.recepient) +str(self.value)
+        self.signature = StringUtil.applyECDSASig(privateKey,bytes(data,'ascii'))
+
+    def verifySignature(self):
+        data = StringUtil.getStringFromKey(self.sender) + StringUtil.getStringFromKey(self.recepient) +str(self.value)
+        return StringUtil.verifyECDSASig(self.sender, bytes(data,'ascii'), self.signature)
+
+
 
 def json_serial(obj):
     '''
@@ -101,6 +113,7 @@ class NoobChain:
     '''
     blockchain = []
     difficulty = 5
+
 
     def isChainValid(self):
         #loop through blockchain to check hashes consistency
@@ -128,23 +141,40 @@ class NoobChain:
         '''
         verbose function
         '''
-        self.blockchain.append(Block("Hi im the first block", "0"))
-        print("Trying to Mine block 1... ")
-        self.blockchain[0].mineBlock(self.difficulty)
 
-        self.blockchain.append(Block("Yo im the second block", self.blockchain[-1].hash))
-        print("Trying to Mine block 2... ")
-        self.blockchain[1].mineBlock(self.difficulty)
+        walletA = Wallet()
+        walletB = Wallet()
+        
+        #test public and private keys
+        print("Private and public keys: ")
+        print(StringUtil.getStringFromKey(walletA.privateKey))
+        print(StringUtil.getStringFromKey(walletA.publicKey))
 
-        self.blockchain.append(Block("Hey im the third block", self.blockchain[-1].hash))
-        print("Trying to Mine block 3... ")
-        self.blockchain[2].mineBlock(self.difficulty)
+        #Test transaction from walletA to walletB
+        transaction = Transaction(walletA.publicKey,walletB.publicKey,5,None)
+        transaction.generateSignature(walletA.privateKey)
 
-        print("Blockchain is Valid: " + str(self.isChainValid()))
+        #verify signature 
+        print("is signature verified")
+        print(transaction.verifySignature())
 
-        print("THE BLOCKCHAIN: ")
-        json_chain = json.dumps([block.__dict__ for block in self.blockchain], default=json_serial, indent=1)
-        print(json_chain)
+        # self.blockchain.append(Block("Hi im the first block", "0"))
+        # print("Trying to Mine block 1... ")
+        # self.blockchain[0].mineBlock(self.difficulty)
+
+        # self.blockchain.append(Block("Yo im the second block", self.blockchain[-1].hash))
+        # print("Trying to Mine block 2... ")
+        # self.blockchain[1].mineBlock(self.difficulty)
+
+        # self.blockchain.append(Block("Hey im the third block", self.blockchain[-1].hash))
+        # print("Trying to Mine block 3... ")
+        # self.blockchain[2].mineBlock(self.difficulty)
+
+        # print("Blockchain is Valid: " + str(self.isChainValid()))
+
+        # print("THE BLOCKCHAIN: ")
+        # json_chain = json.dumps([block.__dict__ for block in self.blockchain], default=json_serial, indent=1)
+        # print(json_chain)
 
 
 if __name__ == '__main__':
