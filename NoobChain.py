@@ -1,12 +1,24 @@
+'''
+A very basic blockchain with simple proof of work mining system
+
+'''
+
+
 from datetime import datetime
 from StringUtil import StringUtil
 import json
 
 
 class Block:
-
+    '''
+    Block class to hold information about transactions in blocks.
+    Each block has its own hash (A digital fingerprint) which is calculated using previous hash
+    Blocks are mined by finding a hash lower than target value (Proof of work system)
+    '''
     def __init__(self, data, previousHash):
-        
+        '''
+        Initializing block with data and hashes
+        '''
         self.data = data
         self.previousHash = previousHash
         self.timeStamp = datetime.now()
@@ -14,7 +26,9 @@ class Block:
         self.hash = self.calculateHash()
 
     def calculateHash(self):
-
+        '''
+        Hash calculator using sha256 algorithm
+        '''
         calculatedHash = StringUtil.applySha256(self.previousHash
                                                 + self.timeStamp.strftime("%m/%d/%Y %H:%M:%S")
                                                 + str(self.nonce)
@@ -22,6 +36,9 @@ class Block:
         return calculatedHash
 
     def mineBlock(self, difficulty):
+        '''
+        Proof of work algorithm to find hash that is lower than the target hash
+        '''
         target = '0' * difficulty
         while self.hash[:difficulty] != target:
             self.nonce = self.nonce + 1
@@ -30,19 +47,25 @@ class Block:
 
 
 def json_serial(obj):
-    """JSON serializer for objects not serializable by default json code"""
+    '''
+    JSON serializer for objects not serializable by default json code
+    '''
 
     if isinstance(obj, (datetime)):
         return obj.isoformat()
     raise TypeError ("Type %s not serializable" % type(obj))
 
 class NoobChain:
-
+    '''
+    The main class of the blockchain
+    Just some useful functions nothing special
+    
+    '''
     blockchain = []
     difficulty = 5
 
     def isChainValid(self):
-        #loop through blockchain to check hashes
+        #loop through blockchain to check hashes consistency
         hashTarget = "0"*self.difficulty
         for i in range(1,len(self.blockchain)):
             currentBlock = self.blockchain[i]
@@ -64,7 +87,9 @@ class NoobChain:
 
 
     def main(self):
-
+        '''
+        verbose function
+        '''
         self.blockchain.append(Block("Hi im the first block", "0"))
         print("Trying to Mine block 1... ")
         self.blockchain[0].mineBlock(self.difficulty)
