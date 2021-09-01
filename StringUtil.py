@@ -1,9 +1,8 @@
 import hashlib
-import base64
-#import ecdsa
 from cryptography.hazmat.primitives.serialization import Encoding,PrivateFormat,PublicFormat,NoEncryption
 from cryptography.hazmat.primitives.asymmetric.ec import EllipticCurvePrivateKey,EllipticCurvePublicKey,ECDSA
 from cryptography.hazmat.primitives import hashes
+
 
 class StringUtil:
 
@@ -69,20 +68,4 @@ class StringUtil:
         
         return merkleRoot
 
-
-    # def applyECDSASig(privateKey, input):
-    #     try:
-    #         signingKey = ecdsa.SigningKey.generate(curve=ecdsa.SECP256k1)
-    #         #verifyingKey = signingKey.get_verifying_key()
-    #         signature = signingKey.sign(bytes(input, 'ascii'))
-    #     except Exception as e:
-    #         raise RuntimeError(e)
-    #     return signature
-
-    # def verifyECDSASig(publicKey, data, signature):
-    #     try:
-    #         verifyingKey = ecdsa.VerifyingKey.from_string(bytes.fromhex(publicKey), curve=ecdsa.SECP256k1, hashfunc=hashlib.sha256)
-    #         return verifyingKey(bytes.fromhex(signature), data)
-    #     except Exception as e:
-    #         raise RuntimeError(e)
 

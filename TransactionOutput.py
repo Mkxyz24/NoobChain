@@ -1,6 +1,7 @@
 from StringUtil import StringUtil
 
 class TransactionOutput:
+    
     def __init__(self, recepient, value, parentTransactionId):
         self.recepient = recepient
         self.value = value

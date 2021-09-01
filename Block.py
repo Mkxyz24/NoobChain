@@ -1,5 +1,7 @@
 from datetime import datetime
 from StringUtil import StringUtil
+
+
 class Block:
     '''
     Block class to hold information about transactions in blocks.

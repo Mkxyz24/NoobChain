@@ -1,6 +1,7 @@
 from StringUtil import StringUtil
-
 from TransactionOutput import TransactionOutput
+
+
 class Transaction:
     '''
     make transactions
@@ -10,8 +11,8 @@ class Transaction:
     3) inputs (reference to previous transactions to verify if sender has sufficient funds)
     4) outputs (shows the amount after transactions, to be used as inputs in futher transactions)
     '''
+
     _sequence = 0          #rough count of generated transactions
-    transactionId = None
 
     def __init__(self, from_addr, to_addr, value, inputs):
         self.sender = from_addr
@@ -19,7 +20,9 @@ class Transaction:
         self.value = value
         self.inputs = inputs
         self.outputs = []
-        
+        self.transactionId = None
+
+
     def calculateHash(self):
         Transaction._sequence = Transaction._sequence+1
         return StringUtil().applySha256(

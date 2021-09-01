@@ -2,28 +2,11 @@
 A blockchain with simple proof of work mining system
 Functionality to send signed transactions using simple wallet
 '''
-
-
-
-
-from hashlib import new
-from StringUtil import StringUtil
-import json
-from cryptography.hazmat.primitives import hashes
 from TransactionOutput import TransactionOutput
 from Transaction import Transaction
 from Wallet import Wallet
 from Block import Block
-        
 
-def json_serial(obj):
-    '''
-    JSON serializer for objects not serializable by default json code
-    '''
-
-    if isinstance(obj, (datetime)):
-        return obj.isoformat()
-    raise TypeError ("Type %s not serializable" % type(obj))
 
 class NoobChain:
     '''
@@ -89,6 +72,7 @@ class NoobChain:
                 if currentTransaction.outputs[1].recepient != currentTransaction.sender:
                     print("#Transaction(" + str(t) + ") output 'change' is not sender.")
                     return False
+
         print("Blockchain is valid")
         return True
     
@@ -96,7 +80,7 @@ class NoobChain:
         newBlock.mineBlock(self.difficulty)
         self.blockchain.append(newBlock)
 
-    def main(self):
+    def test(self):
         '''
         verbose function
         '''
@@ -104,6 +88,7 @@ class NoobChain:
         walletA = Wallet()
         walletB = Wallet()
         coinbase = Wallet()
+
         #create genesis transaction, which sends 100 NoobCoin to walletA
         self.genesisTransaction = Transaction(coinbase.publicKey, walletA.publicKey, 100, None)
         self.genesisTransaction.generateSignature(coinbase.privateKey)
@@ -144,38 +129,5 @@ class NoobChain:
         self.isChainValid()
 
 
-
-        # #test public and private keys
-        # print("Private and public keys: ")
-        # print(StringUtil().getStringFromKey(walletA.privateKey))
-        # print(StringUtil().getStringFromKey(walletA.publicKey))
-
-        # #Test transaction from walletA to walletB
-        # transaction = Transaction(walletA.publicKey,walletB.publicKey,5,None)
-        # transaction.generateSignature(walletA.privateKey)
-
-        # #verify signature 
-        # print("is signature verified")
-        # print(transaction.verifySignature())
-
-        # self.blockchain.append(Block("Hi im the first block", "0"))
-        # print("Trying to Mine block 1... ")
-        # self.blockchain[0].mineBlock(self.difficulty)
-
-        # self.blockchain.append(Block("Yo im the second block", self.blockchain[-1].hash))
-        # print("Trying to Mine block 2... ")
-        # self.blockchain[1].mineBlock(self.difficulty)
-
-        # self.blockchain.append(Block("Hey im the third block", self.blockchain[-1].hash))
-        # print("Trying to Mine block 3... ")
-        # self.blockchain[2].mineBlock(self.difficulty)
-
-        # print("Blockchain is Valid: " + str(self.isChainValid()))
-
-        # print("THE BLOCKCHAIN: ")
-        # json_chain = json.dumps([block.__dict__ for block in self.blockchain], default=json_serial, indent=1)
-        # print(json_chain)
-
-
 if __name__ == '__main__':
-    NoobChain().main()
+    NoobChain().test()
